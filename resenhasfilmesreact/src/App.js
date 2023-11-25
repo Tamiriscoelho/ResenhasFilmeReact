@@ -1,7 +1,12 @@
 import React from 'react';
-import './App.css';
+
 import { useState, useEffect } from 'react';
-import 'bootstrap/dist/css/bootstrap-grid.min.css';//permite usar o css do Bootstrap
+
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+import './App.css';
+//permite usar o css do Bootstrap
+
 import axios from 'axios';//habilita o cliente http baseado em promises para o navegador e node.js que será usado para acessar a api
 import {Modal, ModalBody, ModalFooter, ModalHeader} from 'reactstrap'; // permite usar os componentes React stateless para o bootstrap embutidos e para as janelas modais;
 import cadastro from'./assets/cadastro.png'; // pegando a imagem da pasta assets
@@ -15,8 +20,17 @@ function App() {
   //data - variável que gurada o estado em si
   // setData variável que é uma função que será usada para atualizar o valor do estado ou seja data
   //useState([])- atribui um array vazio como valor inicial.
-  const [modalIncluir, setModalIncluir]=useState(false);
-   
+
+  const [updateData, setUpdateData]=useState(true);
+
+  const [modalIncluir, setModalIncluir]=useState(false);//indicando que o modal vai estar fechado inicialmente
+
+  const [modalEditar, setModalEditar]=useState(false);
+
+  const [modalExcluir, setModalExcluir]=useState(false);
+
+
+
   //cria o estado filmeselecionado
   const [filmeSelecionado, setFilmeSelecionado]=useState(
   {
@@ -30,13 +44,27 @@ function App() {
     setModalIncluir(!modalIncluir);
   }
 
+  const abrirFecharModalEditar=()=>{
+    setModalEditar(!modalEditar);
+  }
+
+  const abrirFecharModalExcluir=()=>{
+    setModalExcluir(!modalExcluir);
+  }
+
+  const selecionarFilme = (filme, opcao) => {
+    setFilmeSelecionado(filme);
+     (opcao === "Editar") ?
+      abrirFecharModalEditar() : abrirFecharModalExcluir();
+  }
+
   //cria o método handleChange para guardar os dados do aluno que serão informados nos inputs  setfilmeSeleciona atualiza o estado
-  const handleChange = e=>{
-    const {name,value} = e.target;
+  const handleChange = e =>{
+    const {name,value} = e.target; // obter os valores do formulario
     setFilmeSelecionado({
       ...filmeSelecionado,[name]:value
     });
-     console.log(filmeSelecionado);
+    console.log(filmeSelecionado);
   }
 
   //criar o request get usando axios e o baseUrl
@@ -51,12 +79,45 @@ function App() {
     })
   }
 
+ 
+
   const pedidoPost=async()=>{
     delete filmeSelecionado.filmeModelId; //deletando o valor do id pois vai ser obtido do bancodados
       await axios.post(baseUrl, filmeSelecionado)//dando um post usando axios passando a urlbase e os dados do filme selecionados la modal
     .then(response=>{//recebo os dados no response
       setData(data.concat(response.data)); // usar o setData e vou atribuir meus dados a variável data
+      setUpdateData(true);
       abrirFecharModalIncluir();
+    }).catch(error=>{
+      console.log(error);
+    })
+  }
+
+  const pedidoPut=async()=>{
+    await axios.put(baseUrl + "/" + filmeSelecionado.filmeModelId, filmeSelecionado)//motando o request usando axios usando o put pasando a urlbase pando o id do filme selecionado e os dados do filme a ser alterdo
+    .then(response => {
+     var resposta = response.data; // armazendo em resposta a resposta da api
+     var dadosAuxiliar=data; //aramazenando os dados em uma variavel auxiliar para fazer as alterações
+     dadosAuxiliar.map(filme=>{ // mapeamos os dados
+       if(filme.filmeModelId===filmeSelecionado.filmeModelId){ //verificar cada registro que foi alterado e enviar os novos dados para api
+         filme.titulo = resposta.titulo;
+         filme.genero = resposta.genero;
+         filme.ano = resposta.ano;
+       }
+     });
+     setUpdateData(true);
+     abrirFecharModalEditar(); // abrir e fechar o modal
+    }).catch(error=>{
+       console.log(error);
+    })
+   }
+
+  const pedidoDelete=async()=>{
+      await axios.delete(baseUrl+ "/" +filmeSelecionado.filmeModelId)//dando um delete usando axios passando a urlbase e o id do filme selecionado
+    .then(response=>{//recebo os dados no response
+      setData(data.filter(filme =>filme.filmeModelId !== response.data)); // aplicando um filtro nos dados excluindo os dados que conhecidem com o id que foi retornado da api operador desiguldade estrita verifica o valor e o tipo de dados 
+      setUpdateData(true);
+      abrirFecharModalExcluir();
     }).catch(error=>{
       console.log(error);
     })
@@ -66,16 +127,19 @@ function App() {
   //primeiro representa a função o código que se quer executar o segundo é o array de dependecias que indica quando desejamos executar o código vai ser executada depois que rederização estiver disponível na tela
   //será executado após cada rederização
   useEffect(()=>{
+    if(updateData) {
       pedidoGet();
-  })
+      setUpdateData(false);
+    }
+  },[updateData])
 
   return (    
-    <div className="filme-container">
+    <div  className="filme-container">
       <br/>
       <h3>Cadastro de Filme</h3>
       <header >
         <img src={cadastro} alt='Cadastro'/>
-        <button  className="btn btn-success" onClick={()=>abrirFecharModalIncluir()}>Incluir Novo Filme</button>
+        <button class="btn btn-success" onClick={()=>abrirFecharModalIncluir()}>Incluir Novo Filme</button>
       </header>
       <table className="table table-bordered">
         <thead>
@@ -95,44 +159,69 @@ function App() {
               <td>{filme.genero}</td>
               <td>{filme.ano}</td>
               <td>
-                <button className="btn btn-primary">Editar</button>{" "}
-                <button className="btn btn-danger">Excluir</button>
+                <button className="btn btn-primary" onClick={()=>selecionarFilme(filme, "Editar")}>Editar</button>{" "}
+                <button className="btn btn-danger" onClick={()=>selecionarFilme(filme, "Excluir")}>Excluir</button>
               </td>
             </tr>
             ))}
         </tbody>
       </table>
 
-
       <Modal isOpen={modalIncluir}>
-
-        <ModalHeader>Incluir Filmes</ModalHeader>
+        <ModalHeader>Incluir Filme</ModalHeader>
         <ModalBody>
-
-          <div className='form-group'>
-
+          <div className="form-group">
             <label>Título: </label>
             <br/>
-            <input type='text' className='form-control' titulo="titulo" onChange={handleChange}/>
+            <input type="text" className="form-control" name="titulo" onChange={handleChange} />
             <br/>
             <label>Genero: </label>
             <br/>
-            <input type='text' className='form-control' genero="genero" onChange={handleChange}/>
+            <input type="text" className="form-control" name="genero" onChange={handleChange} />
             <br/>
             <label>Ano: </label>
             <br/>
-            <input type='text' className='form-control' ano="ano" onChange={handleChange}/>
+            <input type="text" className="form-control" name="ano" onChange={handleChange}/>
             <br/>
-
           </div>
-
         </ModalBody>
-
         <ModalFooter>
-          <button className='btn btn-primary' onClick={()=>pedidoPost()}>Incluir</button>{"  "}
-          <button className='btn btn-primary' onClick={()=>abrirFecharModalIncluir()}>Cancelar</button>
+          <button type="button" class="btn btn-primary" onClick={()=>pedidoPost()}>Incluir</button>{"  "}
+          <button type="button" class="btn btn-primary" onClick={()=>abrirFecharModalIncluir()}>Cancelar</button>
         </ModalFooter>
+      </Modal>
 
+      <Modal isOpen={modalEditar}>
+        <ModalHeader>Editar Aluno</ModalHeader>
+        <ModalBody>
+          <div className="form-group">
+            <label>ID: </label> 
+            <br/> <input type="text" className="form-control" readOnly value={filmeSelecionado && filmeSelecionado.filmeModelId}/>           
+            <br/>
+            <label>Título: </label><br/>
+            <input type="text" className="form-control" name="titulo" onChange={handleChange}  value={filmeSelecionado && filmeSelecionado.titulo}/><br/>
+            <label>Genero: </label><br/>
+            <input type="text"  className="form-control" name="genero" onChange={handleChange} value={filmeSelecionado && filmeSelecionado.genero} /><br/>
+            <label>Ano: </label><br/>
+            <input type="text" className="form-control" 
+            name="ano" onChange={handleChange} value={filmeSelecionado && filmeSelecionado.ano}
+            /> <br/> 
+          </div>
+        </ModalBody>
+        <ModalFooter>
+          <button className="btn btn-primary" onClick={()=>pedidoPut()}>Editar</button>{"  "}
+          <button className="btn btn-primary" onClick={()=>abrirFecharModalEditar()}>Cancelar</button>
+        </ModalFooter>
+      </Modal>
+
+      <Modal isOpen={modalExcluir}>
+        <ModalBody>
+          Confirma a exclusão Filme : {filmeSelecionado && filmeSelecionado.titulo} ?
+        </ModalBody>
+        <ModalFooter>
+          <button className="btn btn-danger" onClick={()=>pedidoDelete()}>Sim</button>
+          <button className="btn btn-secondary" onClick={()=>abrirFecharModalExcluir()}>Não</button>
+        </ModalFooter>
       </Modal>
     </div>
   );
