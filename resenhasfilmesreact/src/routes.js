@@ -3,6 +3,7 @@ import React from "react";
 import {BrowserRouter as Router, Route, Routes} from 'react-router-dom';
 import Login from "./Components/Login";
 import Filmes from "./Components/Filmes";
+import NovoFilme from "./Components/NovoFilme";
 
 //definido o componente de rotas
 export default function MyRoutes() {
@@ -14,8 +15,9 @@ export default function MyRoutes() {
     //vá para o arquivo App.js
       <Router>
         <Routes>
-          <Route path="/" exact element={<Login/>}/>
-          <Route path="/filmes"  element={<Filmes/>}/>
+          <Route path="/" exact  element={<Login/>}/>
+          <Route path="/filmes" element={<Filmes/>}/>
+          <Route path="/filme/novo/:idFilme" element={<NovoFilme/>}/>
         </Routes>
       </Router>  
   );

@@ -10,9 +10,9 @@ export default function Filmes(){
         <header>
           <img src={logoCadastro} alt='Cadastro'/>
           <span>Ben vindo, <strong>Tamiris</strong></span> 
-          <Link className='button' to="filme/novo">Novo Filme</Link> 
+          <Link className='button' to="../filme/novo/0">Novo Filme</Link> 
           <button type='button'>
-            <FiXCircle size={35} color="#0000ff" />
+            <FiXCircle size={35} color="#17202a"/>
           </button>
         </header>
         <form>
