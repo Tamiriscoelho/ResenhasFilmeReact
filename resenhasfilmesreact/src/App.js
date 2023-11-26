@@ -1,3 +1,4 @@
+//Os componentes react são funções javascript que retornam html aqui nos temos uma mistura de html e javasccript conhecido com jsx javascript xml vá para a function App()
 import React from 'react';
 
 import { useState, useEffect } from 'react';
@@ -11,6 +12,7 @@ import axios from 'axios';//habilita o cliente http baseado em promises para o n
 import {Modal, ModalBody, ModalFooter, ModalHeader} from 'reactstrap'; // permite usar os componentes React stateless para o bootstrap embutidos e para as janelas modais;
 import cadastro from'./assets/cadastro.png'; // pegando a imagem da pasta assets
 
+// usando a conexão bidirecional websockte  qualquer alteração feita na function App() a pág vai ser atualizada
 function App() {
 
   const baseUrl = "https://localhost:7129/api/filme"; //edereço para acessar o endpoint
