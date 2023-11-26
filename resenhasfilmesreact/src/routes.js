@@ -2,6 +2,7 @@
 import React from "react";
 import {BrowserRouter as Router, Route, Routes} from 'react-router-dom';
 import Login from "./Components/Login";
+import Filmes from "./Components/Filmes";
 
 //definido o componente de rotas
 export default function MyRoutes() {
@@ -14,6 +15,7 @@ export default function MyRoutes() {
       <Router>
         <Routes>
           <Route path="/" exact element={<Login/>}/>
+          <Route path="/filmes"  element={<Filmes/>}/>
         </Routes>
       </Router>  
   );
