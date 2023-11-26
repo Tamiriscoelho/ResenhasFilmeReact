@@ -1,5 +1,6 @@
 import React from 'react';
 import './style.css';
+import '../../StyleGlobal.css';
 import loginImage from '../../assets/Login.png';
 
 //Para que esse código  ess componete seja exibido vou alterar o código do App.js 
