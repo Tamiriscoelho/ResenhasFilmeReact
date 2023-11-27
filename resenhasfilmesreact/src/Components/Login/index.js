@@ -35,7 +35,7 @@ export default function Login(){
         localStorage.setItem('login',login);
         localStorage.setItem('token',response.data.token.result);
         localStorage.setItem('roles',response.data.user.roles);
-        localStorage.setItem('usuarioModelId', response.data.usuarioModelId);
+        localStorage.setItem('usuarioModelId', response.data.user.usuarioModelId);
         navegacao('/filmes');
         
       } catch (error) {

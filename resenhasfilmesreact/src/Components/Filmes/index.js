@@ -14,6 +14,7 @@ export default function Filmes(){
   const[filtro, setFiltro] = useState([]);
   
   const[filme, setFilmes] = useState([]);
+  
   const login = localStorage.getItem('login');
   const roles = localStorage.getItem('roles');
   const token = localStorage.getItem('token');

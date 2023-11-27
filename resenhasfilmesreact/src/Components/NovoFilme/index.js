@@ -12,24 +12,26 @@ export default function NovoFilme(){
   const[titulo, setTitulo]= useState('');
   const[genero, setGenero]= useState('');
   const[ano, setAno]= useState('');
+  const idFilme =  filmeModelId;
 
   const[nota, setNota]= useState('');
   const[comentario, setComentario]= useState('');
-  const[usuarioModelId, setUsuarioModelId]= useState('');
-  
-
+ 
   const {filmeId} = useParams();
   const navegacao = useNavigate();
+  
 
 const token = localStorage.getItem('token');
 const roles = localStorage.getItem('roles');
-const usuariId = localStorage.getItem('usuarioModelId');
+const usuarioModelId = localStorage.getItem('usuarioModelId');
 
 const authorization = {
   headers:{
     Authorization: `Bearer ${token}`
   }
 }
+
+
 
 useEffect(() =>{
   if (filmeId === '0') 
@@ -61,8 +63,10 @@ async function saveOrUpdate(event){
 
     const dataResenha ={
       nota,
-      genero,
-      ano
+      comentario,
+      usuarioModelId ,
+      idFilme
+      
     }
 
     try {
@@ -97,18 +101,37 @@ async function saveOrUpdate(event){
           </Link>
         </section>
         <form onSubmit={saveOrUpdate}>
+        
+
           <input placeholder='Título'
               value={titulo}
               onChange = {e => setTitulo(e.target.value)}
+              readOnly={roles === "comum" ? true : false}
           />
+
           <input placeholder='Genero'
               value={genero}
               onChange = {e => setGenero(e.target.value)}
+              readOnly={roles === "comum" ? true : false}
           />
           <input placeholder='Ano'
               value={ano}
               onChange = {e => setAno(e.target.value)}
+              readOnly={roles === "comum" ? true : false}
           />
+          { roles === "comum" && (
+          <input placeholder='Nota'
+              onChange = {e => setNota(e.target.value)}
+            
+          />
+          )}
+
+          { roles === "comum" && (
+            <input placeholder='Comentario'
+              onChange = {e => setComentario(e.target.value)}
+          />
+          )}
+          
           <button className='button' type='submit'>{roles === 'comum' ? ' AddResenha' : filmeId === '0' ? 'Incluir' : 'Editar'}</button>
         </form>
       </div>
