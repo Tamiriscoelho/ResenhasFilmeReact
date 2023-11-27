@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import './styles.css';
-import { FiCornerDownLeft, FiUserPlus } from 'react-icons/fi';
+import './style.css';
+import { FiCornerDownLeft, FiFilm } from 'react-icons/fi';
 import { Link,  useNavigate, useParams } from 'react-router-dom';
 import api from '../../services/api';
 
@@ -13,10 +13,18 @@ export default function NovoFilme(){
   const[genero, setGenero]= useState('');
   const[ano, setAno]= useState('');
 
+  const[nota, setNota]= useState('');
+  const[comentario, setComentario]= useState('');
+  const[usuarioModelId, setUsuarioModelId]= useState('');
+  
+
   const {filmeId} = useParams();
   const navegacao = useNavigate();
 
 const token = localStorage.getItem('token');
+const roles = localStorage.getItem('roles');
+const usuariId = localStorage.getItem('usuarioModelId');
+
 const authorization = {
   headers:{
     Authorization: `Bearer ${token}`
@@ -51,8 +59,17 @@ async function saveOrUpdate(event){
       ano
     }
 
+    const dataResenha ={
+      nota,
+      genero,
+      ano
+    }
+
     try {
-      if (filmeId === '0') {
+      if(roles === 'comum'){
+        await api.post('api/Resenha', dataResenha, authorization)
+      }
+      else if (filmeId === '0') {
           await api.post('api/Filme', data, authorization)
       }
       else
@@ -72,8 +89,8 @@ async function saveOrUpdate(event){
      <div className='novo-filme-container'>
       <div className='content'>
          <section className='form'>
-          <FiUserPlus size="105" color='#17202a'/>
-          <h1>{filmeId === '0' ? 'Incluir Novo Filme' : 'Editar Filme'}</h1>
+          <FiFilm size="105" color='#17202a'/>
+          <h1>{roles === 'comum' ? 'Adicionar Resenha' : filmeId === '0' ? 'Incluir Novo Filme' : 'Editar Filme'}</h1>
           <Link className='back-link' to="/filmes"> 
           <FiCornerDownLeft size="25" color='#17202a'/>
             Retornar
@@ -92,7 +109,7 @@ async function saveOrUpdate(event){
               value={ano}
               onChange = {e => setAno(e.target.value)}
           />
-          <button className='button' type='submit'>{filmeId === '0' ? 'Incluir' : 'Editar '}</button>
+          <button className='button' type='submit'>{roles === 'comum' ? ' AddResenha' : filmeId === '0' ? 'Incluir' : 'Editar'}</button>
         </form>
       </div>
      </div>   

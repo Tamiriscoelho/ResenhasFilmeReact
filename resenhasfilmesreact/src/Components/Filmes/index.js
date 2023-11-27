@@ -8,7 +8,11 @@ import{useNavigate} from 'react-router-dom';
 
 //Link componete que permite navegar nas páginas da aplicação single page sem dar o refresh
 export default function Filmes(){
-  const[titulo,setTitulo]=useState('');
+
+  //filtrar dados  definindo 2 estados para controlar o filtro
+  const[searchInput, setSearchInput] = useState('');
+  const[filtro, setFiltro] = useState([]);
+  
   const[filme, setFilmes] = useState([]);
   const login = localStorage.getItem('login');
   const roles = localStorage.getItem('roles');
@@ -20,6 +24,24 @@ const authorization = {
     Authorization: `Bearer ${token}`
   }
 }
+//buscarFilme(valor usado para criterio)
+//verificando se o searchInput não é igual a vazio se for diferente de vazio setFiltro(filme)
+//usando a função filter os dados do array contendo todos o filmes com base na entrada do usuario
+//filme  é o array com os dados de todos os alunos
+const buscarFilme = (valorBusca) =>{
+  setSearchInput(valorBusca);
+  if (searchInput !== '') {
+    const dadosFiltrados = filme.filter( (item) =>{
+      return Object.values(item).join('').toLowerCase()
+      .includes(searchInput.toLowerCase())
+    });
+    setFiltro(dadosFiltrados);
+  }else
+  {
+    setFiltro(filme);
+  }
+}
+
   // o hook useEfect é usado para tratar os efeitos colaterais nos componentes 
   //acessando api pegando todos os filmes pasando o token
   // no response pegamos o retorno da api  e chamos o setFilmes para atualizar os  estado da variavel filmes
@@ -44,9 +66,22 @@ const authorization = {
     try {
       navegacao(`../filme/novo/${id}`)
     } catch (error) {
-      alert('Não foi possível editar o filme')
+      alert('Não foi possível editar o filme' + error)
     }
   }
+
+  async function deleteFilmes(id) {
+    try {
+      if (window.confirm('Deseja deletar o Filme de id = ' + id + ' ?')) {
+        await api.delete(`api/Filme/${id}`, authorization);
+        setFilmes(filme.filter(filme => filme.id !== id));
+      }
+
+    } catch (error) {
+      alert('Não foi possível editar o filme' + error);
+    }
+  }
+
 
   return(
      <div className='filme-container'>
@@ -62,12 +97,33 @@ const authorization = {
           </button>
         </header>
         <form>
-          <input type='text' placeholder='Titulo'/>
-          <button type='button' class='button'>
-            Filtrar Filme pelo Titulo
-          </button>
+          <input type='text' placeholder='Titulo'
+          onChange={(e) => buscarFilme(e.target.value)}
+          />
         </form>
         <h1>Relação de Filmes</h1>
+        
+        {searchInput.length > 1 ?(
+            <ul>
+            {filtro.map(filme=>(
+  
+              <li key={filme.filmeModelId}>
+              <b>Título:</b>{filme.titulo}<br/><br/>
+              <b>Genero:</b>{filme.genero}<br/><br/>
+              <b>Ano:</b>{filme.ano}<br/><br/>
+  
+              <button  onClick={()=> editarFilmes(filme.filmeModelId)} type='button'>
+              <FiEdit size="25" color="#0000ff" />
+              </button>
+  
+              <button onClick={()=> deleteFilmes(filme.filmeModelId)} type='button'>
+              <FiDelete size="25" color="#0000ff" />
+              </button>
+            
+            </li>
+              ))}
+          </ul>
+        ): (
         <ul>
           {filme.map(filme=>(
 
@@ -80,14 +136,15 @@ const authorization = {
             <FiEdit size="25" color="#0000ff" />
             </button>
 
-            <button type='button'>
+            <button onClick={()=> deleteFilmes(filme.filmeModelId)} type='button'>
             <FiDelete size="25" color="#0000ff" />
-            </button>
-          
+            </button> 
+
+        
           </li>
             ))}
         </ul>
+        )}
      </div>
-  )
-  
+    );
 }

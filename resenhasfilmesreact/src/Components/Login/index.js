@@ -3,7 +3,7 @@ import './style.css';
 import '../../StyleGlobal.css';
 import loginImage from '../../assets/Login.png';
 import api from '../../services/api';
-import{useNavigate} from 'react-router-dom';
+import{Link, useNavigate} from 'react-router-dom';
 
 //Para que esse código  ess componete seja exibido vou alterar o código do App.js 
 export default function Login(){
@@ -35,6 +35,7 @@ export default function Login(){
         localStorage.setItem('login',login);
         localStorage.setItem('token',response.data.token.result);
         localStorage.setItem('roles',response.data.user.roles);
+        localStorage.setItem('usuarioModelId', response.data.usuarioModelId);
         navegacao('/filmes');
         
       } catch (error) {
@@ -53,7 +54,10 @@ export default function Login(){
             onChange={e=>setSenha(e.target.value)}/>
             <button class='button' type="submit">Login</button>
           </form>
+          <Link className='button' to="/filme/novo/usuario">Registre-se</Link>
         </section>
+
+       
       </div>
   )
 }
