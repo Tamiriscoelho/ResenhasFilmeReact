@@ -40,6 +40,14 @@ const authorization = {
     }
   }
 
+  async function editarFilmes(id) {
+    try {
+      navegacao(`../filme/novo/${id}`)
+    } catch (error) {
+      alert('Não foi possível editar o filme')
+    }
+  }
+
   return(
      <div className='filme-container'>
         <header>
@@ -62,16 +70,19 @@ const authorization = {
         <h1>Relação de Filmes</h1>
         <ul>
           {filme.map(filme=>(
-            <li key={filme.FilmeModelId}>
+
+            <li key={filme.filmeModelId}>
             <b>Título:</b>{filme.titulo}<br/><br/>
             <b>Genero:</b>{filme.genero}<br/><br/>
             <b>Ano:</b>{filme.ano}<br/><br/>
-            <button type='button'>
+
+            <button  onClick={()=> editarFilmes(filme.filmeModelId)} type='button'>
             <FiEdit size="25" color="#0000ff" />
             </button>
+
             <button type='button'>
             <FiDelete size="25" color="#0000ff" />
-          </button>
+            </button>
           
           </li>
             ))}

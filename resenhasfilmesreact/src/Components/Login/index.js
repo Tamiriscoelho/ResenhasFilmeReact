@@ -20,6 +20,7 @@ export default function Login(){
   async function Mylogin(event) {
     //esse método vai evitar que o form de um refresh assim eu mantenho o comportamento da single pag
       event.preventDefault();
+
     // definir um objeto  chamdo data encapsular o  login e a senha para submeter a api
     //enviando com json api
       const data = {
@@ -30,6 +31,7 @@ export default function Login(){
       try {
         const response = await api.post('api/Login/account/loginuser', data)
 
+        //armazenado no localStorage do navegador. Objeto javascript para aramzenar dados no navegador
         localStorage.setItem('login',login);
         localStorage.setItem('token',response.data.token.result);
         localStorage.setItem('roles',response.data.user.roles);
