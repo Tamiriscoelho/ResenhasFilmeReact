@@ -17,7 +17,7 @@ export default function MyRoutes() {
         <Routes>
           <Route path="/" exact  element={<Login/>}/>
           <Route path="/filmes" element={<Filmes/>}/>
-          <Route path="/filme/novo/:idFilme" element={<NovoFilme/>}/>
+          <Route path="/filme/novo/:filmeId" element={<NovoFilme/>}/>
         </Routes>
       </Router>  
   );
