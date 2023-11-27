@@ -11,7 +11,7 @@ export default function Login(){
   const [senha, setSenha] = useState('');
 
   // par poder redirecionar o usuário para a pag autorizada representa o historico de navegação
-  const navegação = useNavigate();
+  const navegacao = useNavigate();
 
   // A função de login vai ser chamada no formulario <form onSubmit={login}>
 
@@ -31,16 +31,14 @@ export default function Login(){
         const response = await api.post('api/Login/account/loginuser', data)
 
         localStorage.setItem('login',login);
-        localStorage.setItem('token',response.data.token);
+        localStorage.setItem('token',response.data.token.result);
         localStorage.setItem('roles',response.data.user.roles);
-        
-        navegação('/filmes');
+        navegacao('/filmes');
         
       } catch (error) {
          alert('Login ou Senha inválidos!' + error)
       }
   }
-
   return(
       <div className='login-container'>
         <section className='form'>
